@@ -103,14 +103,14 @@ var createOrderControlBlock = function (index) {
 	// add control to control as its child
 	control.appendChild(button);
     
-    // managers of input quantity element
-    input.addEventListener("input", ChangeOpacity);
-    input.addEventListener("blur", function (e) {
+    	// managers of input quantity element
+    	input.addEventListener("input", ChangeOpacity);
+    	input.addEventListener("blur", function (e) {
         controlCapture(e, input.min, input.max);
-    });
+    	});
     
-    // manager of the order an article
-    button.addEventListener("click", OrderArticle);
+    	// manager of the order an article
+    	button.addEventListener("click", OrderArticle);
     
 	// the built control div node is returned
 	return control;
