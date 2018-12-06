@@ -13,8 +13,8 @@ var total = 0;
 
 
 // function called when page is loaded, it performs initializations 
-var init = function () {
-	createShop();
+var init = function () { 
+    createShop();
     filterProducts();
     RecoverCart();
 }
