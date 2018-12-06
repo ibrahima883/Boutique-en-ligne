@@ -103,14 +103,14 @@ var createOrderControlBlock = function (index) {
 	// add control to control as its child
 	control.appendChild(button);
     
-    	// managers of input quantity element
-    	input.addEventListener("input", ChangeOpacity);
-    	input.addEventListener("blur", function (e) {
+    // managers of input quantity element 
+    input.addEventListener("input", ChangeOpacity);
+    input.addEventListener("blur", function (e) {
         controlCapture(e, input.min, input.max);
-    	});
+    });
     
-    	// manager of the order an article
-    	button.addEventListener("click", OrderArticle);
+    // manager of the order an article 
+    button.addEventListener("click", OrderArticle);
     
 	// the built control div node is returned
 	return control;
@@ -156,7 +156,7 @@ var filterProducts = function () {
             }
         }
     });
-};
+}
 
 /*
 * change the cart button opacity. The button remains transparent 
@@ -282,8 +282,7 @@ var CreateOrUpdatePurchase = function (index, quantity, purchases, updateTotalCo
         }
         document.getElementById(index + "-qtepanier").setAttribute("value", quantity);
         updateTotalCost = true;
-    } 
-    document.getElementById("montant").textContent = computeTotalCost(purchases);
+    }
 }
 
 /*
@@ -321,6 +320,8 @@ var OrderArticle = function (event) {
         // manager of storing the cart in browser
         var storeButton = document.getElementById("sauvegarder");
         (storeButton) ? storeButton.addEventListener("click", storeCart) : createStoreButton();
+        
+        document.getElementById("montant").textContent = computeTotalCost(purchases);
     }
 }
 
@@ -347,6 +348,7 @@ var storeCart = function () {
         var panier = document.getElementById("panier");
         // Store the cart
         localStorage.setItem(0, panier.innerHTML);
+        localStorage.setItem("cartWasBuilt", true);
         var message = document.createElement("p");
         message.textContent = "Votre panier a bien été sauvegardé.";
         var purchases = document.querySelector("#panier > .achats");
@@ -365,34 +367,36 @@ var storeCart = function () {
 * When loading the page, the cart is displayed in the state where it was left
 * She uses the 'API web storage' to do that
 */
-var RecoverCart = function () { 
+var RecoverCart = function () {
     // Check brower support
     if (typeof(Storage) !== undefined) { 
-        var panier = document.getElementById("panier");
-        // Retrieve the cart
-        panier.innerHTML = localStorage.getItem(0);
-        filterProducts();
-        var purchases = panier.children[2]; 
-        for (var i = 0; i < purchases.children.length - 1; i++) {
-            var purchase = purchases.children[i];
-            var index = purchase.id.split('-')[0];
-            
-            // Manager of order an article
-            var orderButton = document.getElementById(index + "-" + orderIdKey);
-            orderButton.addEventListener("click", OrderArticle);
-            
-            // Manager of deleting an article in cart
-            var removeButton = document.getElementById(index + "-remove");
-            removeButton.addEventListener("click", removeArticle);
-            
-            // Manager of modifying an article's quantity in cart
-            var inputQuantity = document.getElementById(index + "-qtepanier");
-            inputQuantity.addEventListener("input", changeQuantityInCart); 
+        if (localStorage.getItem("cartWasBuilt")) {
+            var panier = document.getElementById("panier");
+            // Retrieve the cart
+            panier.innerHTML = localStorage.getItem(0);
+            filterProducts();
+            var purchases = panier.children[2]; 
+            for (var i = 0; i < purchases.children.length - 1; i++) {
+                var purchase = purchases.children[i];
+                var index = purchase.id.split('-')[0];
+
+                // Manager of order an article
+                var orderButton = document.getElementById(index + "-" + orderIdKey);
+                orderButton.addEventListener("click", OrderArticle);
+
+                // Manager of deleting an article in cart
+                var removeButton = document.getElementById(index + "-remove");
+                removeButton.addEventListener("click", removeArticle);
+
+                // Manager of modifying an article's quantity in cart
+                var inputQuantity = document.getElementById(index + "-qtepanier");
+                inputQuantity.addEventListener("input", changeQuantityInCart); 
+            }
+
+            // Manager of storing cart in the browser
+            var storeButton = document.getElementById("sauvegarder");
+            storeButton.addEventListener("click", storeCart); 
         }
-        
-        // Manager of storing cart in the browser
-        var storeButton = document.getElementById("sauvegarder");
-        storeButton.addEventListener("click", storeCart); 
         
     } else {
         panier.innerHTML = "Sorry, your browser does not support Web Storage...";
