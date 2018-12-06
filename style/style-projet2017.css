@@ -20,12 +20,20 @@ div#panier, div#boutique {
 	display : inline-block;
 	vertical-align: middle;
 	height : 550px;
+    /* ID */
+    position: absolute;
+    top: 100px;
 }
 
 div#boutique {
 		width : 566px;	
 }
 
+/* ID */
+div#panier {
+    left: 605px;
+}
+/* ID */
 
 div.achats, div#boutique {
 	overflow: auto;
