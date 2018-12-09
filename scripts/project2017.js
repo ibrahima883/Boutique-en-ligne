@@ -103,14 +103,14 @@ var createOrderControlBlock = function (index) {
 	// add control to control as its child
 	control.appendChild(button);
     
-    	// managers of input quantity element 
-    	input.addEventListener("input", ChangeOpacity);
-    	input.addEventListener("blur", function (e) {
+    // managers of input quantity element 
+    input.addEventListener("input", ChangeOpacity);
+    input.addEventListener("blur", function (e) {
         controlCapture(e, input.min, input.max);
-    	});
+    });
     
-    	// manager of the order an article 
-    	button.addEventListener("click", OrderArticle);
+    // manager of the order an article 
+    button.addEventListener("click", OrderArticle);
     
 	// the built control div node is returned
 	return control;
@@ -234,6 +234,11 @@ var removeArticle = function (event) {
     document.getElementById("montant").textContent = computeTotalCost(purchases);
     if (purchases.childNodes.length === 1 && store) {
         purchases.removeChild(store);
+        // check browser support API web storage
+        if (typeof(Storage) !== undefined) {
+            // the cart is empty
+            localStorage.setItem("cartWasBuilt", "false");
+        }
     }
 }
 
@@ -318,15 +323,18 @@ var OrderArticle = function (event) {
         }
         
         // manager of storing the cart in browser
+        if (purchases.children.length === 1) {
+            createStoreButton();
+        }
         var storeButton = document.getElementById("sauvegarder");
-        (storeButton) ? storeButton.addEventListener("click", storeCart) : createStoreButton();
+        storeButton.addEventListener("click", storeCart);
         
         document.getElementById("montant").textContent = computeTotalCost(purchases);
     }
 }
 
 /*
-* Create a backup button of cart in the browser
+* create a backup button of cart in the browser
 */
 var createStoreButton = function () {
     var store = document.createElement("input");
@@ -339,21 +347,21 @@ var createStoreButton = function () {
 }
 
 /*
-* Store the cart in the browser
-* She uses the 'API web storage' to do that
+* store the cart in the browser
+* she uses the 'API web storage' to do that
 */
 var storeCart = function () {  
-    // Check browser support
+    // check browser support
     if (typeof(Storage) !== undefined) {
         var panier = document.getElementById("panier");
-        // Store the cart
+        // store the cart
         localStorage.setItem(0, panier.innerHTML);
-        localStorage.setItem("cartWasBuilt", true);
+        localStorage.setItem("cartWasBuilt", "true");
         var message = document.createElement("p");
         message.textContent = "Votre panier a bien été sauvegardé.";
         var purchases = document.querySelector("#panier > .achats");
         purchases.appendChild(message);
-        // Removes the message after 3 seconds
+        // removes the message after 3 seconds
         setTimeout(function () {
             purchases.removeChild(message);
         }, 3000);
@@ -363,16 +371,16 @@ var storeCart = function () {
 }
 
 /*
-* Recover the cart when you next load the page
-* When loading the page, the cart is displayed in the state where it was left
-* She uses the 'API web storage' to do that
+* recover the cart when you next load the page
+* when loading the page, the cart is displayed in the state where it was left
+* she uses the 'API web storage' to do that
 */
 var RecoverCart = function () {
-    // Check brower support
+    // check brower support
     if (typeof(Storage) !== undefined) { 
-        if (localStorage.getItem("cartWasBuilt")) {
+        if (localStorage.getItem("cartWasBuilt") === "true") {
             var panier = document.getElementById("panier");
-            // Retrieve the cart
+            // retrieve the cart
             panier.innerHTML = localStorage.getItem(0);
             filterProducts();
             var purchases = panier.children[2]; 
@@ -380,20 +388,20 @@ var RecoverCart = function () {
                 var purchase = purchases.children[i];
                 var index = purchase.id.split('-')[0];
 
-                // Manager of order an article
+                // manager of order an article
                 var orderButton = document.getElementById(index + "-" + orderIdKey);
                 orderButton.addEventListener("click", OrderArticle);
 
-                // Manager of deleting an article in cart
+                // manager of deleting an article in cart
                 var removeButton = document.getElementById(index + "-remove");
                 removeButton.addEventListener("click", removeArticle);
 
-                // Manager of modifying an article's quantity in cart
+                // manager of modifying an article's quantity in cart
                 var inputQuantity = document.getElementById(index + "-qtepanier");
                 inputQuantity.addEventListener("input", changeQuantityInCart); 
             }
 
-            // Manager of storing cart in the browser
+            // manager of storing cart in the browser
             var storeButton = document.getElementById("sauvegarder");
             storeButton.addEventListener("click", storeCart); 
         }
